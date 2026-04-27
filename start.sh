@@ -28,7 +28,7 @@ fi
 
 # Start backend in background
 echo "Starting backend on http://localhost:5000 ..."
-(cd "$SCRIPT_DIR/backend/src/ProductQualityReport.Api" && dotnet run) &
+(cd "$SCRIPT_DIR/backend" && dotnet run) &
 BACKEND_PID=$!
 
 echo "Waiting for backend to start..."

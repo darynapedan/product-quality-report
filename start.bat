@@ -29,7 +29,7 @@ if not exist "frontend\node_modules" (
 )
 
 echo Starting backend on http://localhost:5000 ...
-start "Backend" cmd /k "cd backend\src\ProductQualityReport.Api && dotnet run"
+start "Backend" cmd /k "cd backend && dotnet run"
 
 echo Waiting for backend to start...
 timeout /t 6 /nobreak >nul
