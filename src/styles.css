@@ -1,0 +1,74 @@
+/* Theme CSS Variables */
+:root {
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f8fafc;
+  --bg-hover: #f1f5f9;
+  --bg-input: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-label: #334155;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  --status-red: #dc2626;
+  --status-red-bg: #fef2f2;
+  --status-green: #059669;
+  --status-green-bg: #f0fdf4;
+  --status-amber: #d97706;
+  --status-amber-bg: rgba(245, 158, 11, 0.1);
+  --info-bg: rgba(59, 130, 246, 0.1);
+  --info-text: #1d4ed8;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+[data-theme="dark"] {
+  --bg-page: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-alt: #1a2332;
+  --bg-hover: #334155;
+  --bg-input: #0f172a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-label: #cbd5e1;
+  --border: #334155;
+  --border-light: #1e293b;
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
+  --accent-gradient: linear-gradient(135deg, #60a5fa, #a78bfa);
+  --status-red: #f87171;
+  --status-red-bg: rgba(248, 113, 113, 0.1);
+  --status-green: #34d399;
+  --status-green-bg: rgba(52, 211, 153, 0.1);
+  --status-amber: #fbbf24;
+  --status-amber-bg: rgba(251, 191, 36, 0.1);
+  --info-bg: rgba(96, 165, 250, 0.1);
+  --info-text: #93c5fd;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-lg: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+a {
+  color: inherit;
+}
