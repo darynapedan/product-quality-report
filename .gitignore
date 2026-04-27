@@ -1,43 +1,20 @@
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/src/**/*.Development.json
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/cache/
 
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+# IDE
+.idea/
+.vscode/
+*.suo
+*.user
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-
-# System files
+# OS
 .DS_Store
 Thumbs.db
-
-# Environment (keep environment.ts, ignore local overrides)
-src/environments/environment.local.ts
