@@ -135,7 +135,7 @@ export class SnapshotService {
       'font-size:0.85rem',
       'font-weight:500',
       'padding:0.35rem 0 0.75rem',
-      `color:${getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#64748b'}`,
+      `color:${getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#2d4a7a'}`,
       'font-family:inherit',
       'letter-spacing:0.01em',
     ].join(';');
@@ -194,7 +194,7 @@ export class SnapshotService {
     }
 
     const title = options.title || options.pageName.replace(/_/g, ' ');
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const currentTheme = 'capture-presentation';
     const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-page').trim() || '#f1f5f9';
 
     const html = `<!DOCTYPE html>
@@ -261,7 +261,7 @@ export class SnapshotService {
 
     const title = options.title || options.pageName.replace(/_/g, ' ');
     const now = new Date().toLocaleString();
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const currentTheme = 'capture-presentation';
 
     const html = `<!DOCTYPE html>
 <html lang="en" data-theme="${currentTheme}">

@@ -16,13 +16,15 @@ builder.Services.AddHttpClient<JiraApiService>();
 // App services
 builder.Services.AddScoped<JiraApiService>();
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<EngineeringBacklogService>();
+builder.Services.AddScoped<DiagnosisService>();
 
 // CORS — allow the frontend dev server and GitHub Pages
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
         policy.WithOrigins(
-            "http://localhost:4200",
+            "http://localhost:4201",
             "https://darynapedan.github.io")
         .AllowAnyHeader()
         .AllowAnyMethod());

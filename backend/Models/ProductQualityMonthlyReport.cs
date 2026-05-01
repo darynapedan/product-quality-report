@@ -17,7 +17,10 @@ public class ProductQualityMonthlyReport
     public decimal BlockersReportedMtdChangePct { get; set; }
     public decimal CriticalsReportedMtdChangePct { get; set; }
 
-    // KPI: Resolved %
+    // KPI: Resolved counts (absolute) and percentages
+    public int TotalResolvedCount { get; set; }
+    public int BlockersResolvedCount { get; set; }
+    public int CriticalsResolvedCount { get; set; }
     public decimal TotalResolvedPct { get; set; }
     public decimal BlockersResolvedPct { get; set; }
     public decimal CriticalsResolvedPct { get; set; }

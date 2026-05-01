@@ -1,32 +1,37 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
-import { Chart } from 'chart.js';
+import { Injectable, computed } from '@angular/core';
+
+export interface ChartColors {
+  blocker:  string;
+  critical: string;
+  major:    string;
+  minor:    string;
+  lowest:   string;
+  line1:    string;
+  line2:    string;
+  line3:    string;
+  dsTeam:   string;
+  engTeam:  string;
+}
+
+const CHART_COLORS: ChartColors = {
+  blocker:  '#c8502a',
+  critical: '#ef9644',
+  major:    '#fbd34c',
+  minor:    '#81bc01',
+  lowest:   '#00acb9',
+  line1:    '#00acb9',
+  line2:    '#f07440',
+  line3:    '#81bc01',
+  dsTeam:   '#00205c',
+  engTeam:  '#00acb9',
+};
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private readonly themeMode_ = signal<'light' | 'dark'>('light');
-  readonly themeMode = this.themeMode_.asReadonly();
-  readonly isDark = computed(() => this.themeMode_() === 'dark');
+  readonly chartColors = computed<ChartColors>(() => CHART_COLORS);
 
   constructor() {
-    const stored = localStorage.getItem('theme-mode') as 'light' | 'dark' | null;
-    if (stored === 'light' || stored === 'dark') {
-      this.themeMode_.set(stored);
-    }
-    effect(() => this.applyTheme(this.themeMode_()));
-    this.applyTheme(this.themeMode_());
-  }
-
-  private applyTheme(mode: 'light' | 'dark'): void {
-    document.documentElement.setAttribute('data-theme', mode);
-    const isDark = mode === 'dark';
-    Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
-    Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-  }
-
-  toggleTheme(): void {
-    const next = this.themeMode_() === 'light' ? 'dark' : 'light';
-    this.themeMode_.set(next);
-    localStorage.setItem('theme-mode', next);
+    document.documentElement.setAttribute('data-theme', 'capture-presentation');
   }
 
   getPageDates(pageKey: string): { start: Date; end: Date } | null {

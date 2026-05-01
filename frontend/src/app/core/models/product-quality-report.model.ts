@@ -14,7 +14,10 @@ export interface ProductQualityMonthlyReport {
   blockersReportedMtdChangePct: number;
   criticalsReportedMtdChangePct: number;
 
-  // KPI: Resolved %
+  // KPI: Resolved counts and %
+  totalResolvedCount: number;
+  blockersResolvedCount: number;
+  criticalsResolvedCount: number;
   totalResolvedPct: number;
   blockersResolvedPct: number;
   criticalsResolvedPct: number;

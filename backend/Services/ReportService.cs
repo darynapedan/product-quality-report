@@ -30,35 +30,67 @@ public class ReportService
 
         // Date windows
         var threeMonthStart = startDate.AddMonths(-3);
-        var fetchStart = startDate.AddMonths(-14);
+        var fetchStart = startDate.AddMonths(-15);
         var prev30Start = startDate.AddDays(-30);
 
-        // Parallel Jira fetches
+        // Find CSD source config (if configured)
+        var csdSource = _config.BacklogSources.FirstOrDefault(s =>
+            s.ProjectKey.Equals("CSD", StringComparison.OrdinalIgnoreCase));
+
+        // Parallel Jira fetches — APP + CSD (if configured)
         var openTask     = _jira.GetOpenBugsDetailedAsync(ct);
         var createdTask  = _jira.GetAllBugsInDateRangeAsync(fetchStart, endDate, ct);
         var resolvedTask = _jira.GetResolvedBugsInDateRangeAsync(fetchStart, endDate, ct);
-        await Task.WhenAll(openTask, createdTask, resolvedTask);
 
-        var openBugs         = (await openTask).ToList();
-        var historicCreated  = (await createdTask).Where(b => b.Created.HasValue).ToList();
-        var historicResolved = (await resolvedTask).Where(b => b.ResolutionDate.HasValue).ToList();
+        Task<IEnumerable<JiraIssue>>? csdOpenTask     = null;
+        Task<IEnumerable<JiraIssue>>? csdCreatedTask  = null;
+        Task<IEnumerable<JiraIssue>>? csdResolvedTask = null;
 
-        // ── KPI: Reported ──
-        var periodBugs = historicCreated.Where(b => b.Created!.Value >= startDate && b.Created.Value < endDate).ToList();
-        var totalReportedMtd    = periodBugs.Count;
-        var blockersReportedMtd = periodBugs.Count(b => IsBlocker(b.Priority));
-        var criticalsReportedMtd = periodBugs.Count(b => IsCritical(b.Priority));
+        if (csdSource != null)
+        {
+            csdOpenTask     = _jira.GetCsdOpenBugsAsync(csdSource, ct);
+            csdCreatedTask  = _jira.GetCsdBugsInDateRangeAsync(csdSource, fetchStart, endDate, ct);
+            csdResolvedTask = _jira.GetCsdResolvedBugsInDateRangeAsync(csdSource, fetchStart, endDate, ct);
+        }
+
+        var allTasks = new List<Task> { openTask, createdTask, resolvedTask };
+        if (csdOpenTask != null)     allTasks.Add(csdOpenTask);
+        if (csdCreatedTask != null)  allTasks.Add(csdCreatedTask);
+        if (csdResolvedTask != null) allTasks.Add(csdResolvedTask);
+        await Task.WhenAll(allTasks);
+
+        // APP tickets that clone a CSD ticket are excluded (dedup) from all pools
+        var appOpen     = (await openTask).Where(b => b.LinkedCsdKey == null).ToList();
+        var appCreated  = (await createdTask).Where(b => b.LinkedCsdKey == null && b.Created.HasValue).ToList();
+        var appResolved = (await resolvedTask).Where(b => b.LinkedCsdKey == null && b.ResolutionDate.HasValue).ToList();
+
+        var csdOpen     = csdOpenTask     != null ? (await csdOpenTask).ToList()     : new List<JiraIssue>();
+        var csdCreated  = csdCreatedTask  != null ? (await csdCreatedTask).Where(b => b.Created.HasValue).ToList()       : new List<JiraIssue>();
+        var csdResolved = csdResolvedTask != null ? (await csdResolvedTask).Where(b => b.ResolutionDate.HasValue).ToList() : new List<JiraIssue>();
+
+        var openBugs         = appOpen.Concat(csdOpen).ToList();
+        var historicCreated  = appCreated.Concat(csdCreated).ToList();
+        var historicResolved = appResolved.Concat(csdResolved).ToList();
+
+        // ── KPI: Reported ── (bugs created in the selected period)
+        var currCreated  = historicCreated.Where(b => b.Created!.Value >= startDate && b.Created.Value < endDate).ToList();
+        var currResolved = historicResolved.Where(b => b.ResolutionDate!.Value >= startDate && b.ResolutionDate.Value < endDate).ToList();
+        var prevCreated  = historicCreated.Where(b => b.Created!.Value >= prev30Start && b.Created.Value < startDate).ToList();
+        var prevResolved = historicResolved.Where(b => b.ResolutionDate!.Value >= prev30Start && b.ResolutionDate.Value < startDate).ToList();
+
+        var totalReportedMtd     = currCreated.Count;
+        var blockersReportedMtd  = currCreated.Count(b => IsBlocker(b.Priority));
+        var criticalsReportedMtd = currCreated.Count(b => IsCritical(b.Priority));
 
         var threeMonthBugs = historicCreated.Where(b => b.Created!.Value >= threeMonthStart && b.Created.Value < startDate).ToList();
         var threeMonthAvgTotal    = Avg3(threeMonthBugs.Count);
         var threeMonthAvgBlockers = Avg3(threeMonthBugs.Count(b => IsBlocker(b.Priority)));
         var threeMonthAvgCriticals = Avg3(threeMonthBugs.Count(b => IsCritical(b.Priority)));
 
-        // ── KPI: Resolved % ──
-        var currCreated  = historicCreated.Where(b => b.Created!.Value >= startDate && b.Created.Value < endDate).ToList();
-        var currResolved = historicResolved.Where(b => b.ResolutionDate!.Value >= startDate && b.ResolutionDate.Value < endDate).ToList();
-        var prevCreated  = historicCreated.Where(b => b.Created!.Value >= prev30Start && b.Created.Value < startDate).ToList();
-        var prevResolved = historicResolved.Where(b => b.ResolutionDate!.Value >= prev30Start && b.ResolutionDate.Value < startDate).ToList();
+        // ── KPI: Resolved counts ──
+        var totalResolvedCount     = currResolved.Count;
+        var blockersResolvedCount  = currResolved.Count(b => IsBlocker(b.Priority));
+        var criticalsResolvedCount = currResolved.Count(b => IsCritical(b.Priority));
 
         var totalResolvedPct           = ResolvedPct(currCreated, currResolved);
         var blockersResolvedPct        = ResolvedPct(currCreated, currResolved, IsBlocker);
@@ -67,11 +99,12 @@ public class ReportService
         var prevBlockersResolvedPct    = ResolvedPct(prevCreated, prevResolved, IsBlocker);
         var prevCriticalsResolvedPct   = ResolvedPct(prevCreated, prevResolved, IsCritical);
 
-        // ── Monthly chart (12 months) ──
-        var monthlyBugs = GenerateMonths(endDate.AddMonths(-12), endDate)
+        // ── Monthly chart (13 months, last bar capped at endDate) ──
+        var monthlyBugs = GenerateMonths(endDate.AddMonths(-13), endDate)
             .Select(m =>
             {
-                var mb = historicCreated.Where(b => b.Created!.Value >= m.Start && b.Created.Value < m.End).ToList();
+                var mEnd = m.End > endDate ? endDate : m.End;
+                var mb = historicCreated.Where(b => b.Created!.Value >= m.Start && b.Created.Value < mEnd).ToList();
                 return new MonthlyBugCountPoint
                 {
                     MonthLabel = m.Start.ToString("MMM yy", CultureInfo.InvariantCulture),
@@ -103,8 +136,8 @@ public class ReportService
                 };
             }).ToList();
 
-        // ── Backlog growth (6 months) ──
-        var backlogGrowth = GenerateMonths(endDate.AddMonths(-6), endDate)
+        // ── Backlog growth (8 months) ──
+        var backlogGrowth = GenerateMonths(endDate.AddMonths(-8), endDate)
             .Select(m =>
             {
                 var snap = m.End > now ? now : m.End;
@@ -124,14 +157,15 @@ public class ReportService
         // ── Ticket lists ──
         var criticalBlockerTickets = openBugs
             .Where(b => IsBlocker(b.Priority) || IsCritical(b.Priority))
-            .OrderByDescending(b => b.Created)
+            .OrderBy(b => IsBlocker(b.Priority) ? 0 : 1)
+            .ThenByDescending(b => b.Created)
             .Take(50)
             .Select(b => ToTicketItem(b, jiraBase, now))
             .ToList();
 
         var majorTickets = openBugs
             .Where(b => IsMajor(b.Priority))
-            .OrderByDescending(b => b.Created)
+            .OrderBy(b => b.Created)   // oldest first = most days open first
             .Take(50)
             .Select(b => ToTicketItem(b, jiraBase, now))
             .ToList();
@@ -155,6 +189,9 @@ public class ReportService
             TotalReportedMtdChangePct     = ChangePct(totalReportedMtd,    threeMonthAvgTotal),
             BlockersReportedMtdChangePct  = ChangePct(blockersReportedMtd, threeMonthAvgBlockers),
             CriticalsReportedMtdChangePct = ChangePct(criticalsReportedMtd, threeMonthAvgCriticals),
+            TotalResolvedCount     = totalResolvedCount,
+            BlockersResolvedCount  = blockersResolvedCount,
+            CriticalsResolvedCount = criticalsResolvedCount,
             TotalResolvedPct    = totalResolvedPct,
             BlockersResolvedPct = blockersResolvedPct,
             CriticalsResolvedPct = criticalsResolvedPct,

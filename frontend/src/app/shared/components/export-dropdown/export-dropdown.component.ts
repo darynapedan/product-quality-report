@@ -28,7 +28,7 @@ export type SnapshotFormat = 'png' | 'html' | 'pdf';
     .export-wrapper { position: relative; display: inline-block; }
     .btn-export {
       padding: 0.5rem 1rem;
-      background: #1e293b;
+      background: var(--accent-blue);
       color: white;
       border: none;
       border-radius: 8px;

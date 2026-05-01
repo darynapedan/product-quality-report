@@ -50,8 +50,41 @@ public class JiraIssueFields
     [JsonPropertyName("priority")]
     public JiraPriorityDto? Priority { get; set; }
 
+    [JsonPropertyName("issuelinks")]
+    public List<JiraIssueLinkDto>? IssueLinks { get; set; }
+
     [JsonExtensionData]
     public Dictionary<string, object>? AdditionalFields { get; set; }
+}
+
+public class JiraIssueLinkDto
+{
+    [JsonPropertyName("type")]
+    public JiraLinkTypeDto? Type { get; set; }
+
+    [JsonPropertyName("outwardIssue")]
+    public JiraLinkedIssueDto? OutwardIssue { get; set; }
+
+    [JsonPropertyName("inwardIssue")]
+    public JiraLinkedIssueDto? InwardIssue { get; set; }
+}
+
+public class JiraLinkTypeDto
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("outward")]
+    public string Outward { get; set; } = string.Empty;
+
+    [JsonPropertyName("inward")]
+    public string Inward { get; set; } = string.Empty;
+}
+
+public class JiraLinkedIssueDto
+{
+    [JsonPropertyName("key")]
+    public string Key { get; set; } = string.Empty;
 }
 
 public class JiraUserDto
