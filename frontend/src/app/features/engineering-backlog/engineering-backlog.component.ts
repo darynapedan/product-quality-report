@@ -53,19 +53,19 @@ import { EngineeringBacklogReport, DiagnosisCard } from '../../core/models/engin
             <span class="kpi-title">BACKLOG SIZE</span>
             <div class="kpi-pair">
               <div class="kpi-half ds">
-                <span class="kpi-big">{{ d.dsTicketCount }}</span>
+                <span class="kpi-big">{{ d.dsAllTicketCount }}</span>
                 <span class="kpi-team">DATA SVC</span>
                 <span class="kpi-sub">vs ~{{ d.dsEngineerCount * 5 }} expected</span>
               </div>
               <div class="kpi-divider"></div>
               <div class="kpi-half eng">
-                <span class="kpi-big">{{ d.engTicketCount }}</span>
+                <span class="kpi-big">{{ d.engAllTicketCount }}</span>
                 <span class="kpi-team">ENGINEERING</span>
                 <span class="kpi-sub">vs ~{{ d.engEngineerCount * 5 }} expected</span>
               </div>
             </div>
             <span class="kpi-badge over">OVER</span>
-            <span class="kpi-bench">Benchmark: ~5 tix/eng (healthy) &bull; {{ d.unassignedCount }} unassigned</span>
+            <span class="kpi-bench">Benchmark: ~5 tix/eng (healthy) &bull; *including unassigned ({{ d.unassignedCount }} total, split by request type)</span>
           </div>
 
           <div class="kpi-card">

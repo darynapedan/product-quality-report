@@ -87,6 +87,8 @@ public class EngineeringBacklogService
 
         var dsAllTickets = issues.Where(IsDsTicket).ToList();
         var engAllTickets = issues.Where(i => !IsDsTicket(i)).ToList();
+        report.DsAllTicketCount  = dsAllTickets.Count;
+        report.EngAllTicketCount = engAllTickets.Count;
         report.DsAvgDaysOpen  = AvgDaysOpen(dsAllTickets, now);
         report.EngAvgDaysOpen = AvgDaysOpen(engAllTickets, now);
         report.DsMedianDaysOpen  = MedianDaysOpen(dsAllTickets, now);

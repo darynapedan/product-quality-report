@@ -5,6 +5,8 @@ export interface EngineeringBacklogReport {
   // KPIs
   dsTicketCount: number;
   engTicketCount: number;
+  dsAllTicketCount: number;
+  engAllTicketCount: number;
   unassignedCount: number;
   totalCount: number;
   dsEngineerCount: number;

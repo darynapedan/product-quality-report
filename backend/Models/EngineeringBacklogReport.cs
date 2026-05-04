@@ -8,6 +8,8 @@ public class EngineeringBacklogReport
     // KPIs
     public int DsTicketCount { get; set; }
     public int EngTicketCount { get; set; }
+    public int DsAllTicketCount { get; set; }
+    public int EngAllTicketCount { get; set; }
     public int UnassignedCount { get; set; }
     public int TotalCount { get; set; }
     public int DsEngineerCount { get; set; }
