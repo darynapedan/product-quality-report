@@ -19,7 +19,7 @@ import { EngineeringBacklogReport, DiagnosisCard } from '../../core/models/engin
       <header class="page-header">
         <div class="header-top">
           <div class="header-title">
-            <h1>Engineering Backlog — Data Services vs Engineering</h1>
+            <h1>Backlog Health & Capacity Report - Data Services & Engineering</h1>
             @if (data(); as d) {
               <p class="subtitle">As of {{ d.generatedAt | date:'MMM d, yyyy' }} &bull; <strong>{{ d.totalCount }} open tickets</strong> &bull; Data Services ({{ d.dsEngineerCount }} engineers, {{ d.dsTicketCount }} tix) vs Engineering ({{ d.engEngineerCount }} engineers, {{ d.engTicketCount }} tix) &bull; {{ d.unassignedCount }} unassigned</p>
             } @else {
